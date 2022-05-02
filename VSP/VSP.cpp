@@ -214,7 +214,47 @@ double TSP_eng(vector <Cord> cords)
 
 int main()
 {
-
+    vector <string> data = list_files("data");
+    string buf;
+    ofstream fout;
+    fout.open("result.txt");
+    string x;
+    try {
+        for (int k = 0; k < data.size(); k++)
+        {
+            x = data[k];
+            cout << "Starting " << x << endl << flush;
+            vector <Cord> cords;
+            ifstream file("data/" + x);
+            getline(file, buf);
+            while (getline(file, buf))
+            {
+                if (buf == "") continue;
+                cords.push_back(split(buf, x));
+            }
+            file.close();
+            TSP_Graph test(cords);
+            int count = 0;
+            while (!test.is_finish())
+            {
+                test.line_reduction();
+                test.column_reduction();
+                test.get_ribe_cost();
+                test.matrix_reduction();
+                count++;
+                cout << count << " edge ended." << flush << endl;
+            }
+            cout << x << " test finished " << endl;
+            fout << x << ":" << test.return_cost() << endl;
+            test.~TSP_Graph();
+        }
+    }
+    catch (exception& e)
+    {
+        cout << e.what();
+        cin.get();
+    }
+    fout.close();
 }
 
 
