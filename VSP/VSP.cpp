@@ -46,6 +46,11 @@ public:
     
     bool is_finish()
     {
+        if (cords_base.size() == 2)
+        {
+            cycle = { cords_base[0].num, cords_base[1].num };
+            all_cost = 2 * dist(cords_base[0], cords_base[1]);
+        }
         if (ribe_counter == base.size())
             return true;
         else
@@ -135,9 +140,11 @@ public:
                     if (get_min(i, k) > counter)
                     {
                         buf = make_pair(i, k);
-                        cost_ribe = base_buf[i][k]*2*1.13;
-                        cycle.push_back(cords_base[i].num);
-                        cycle.push_back(cords_base[k].num);
+                        cost_ribe = base_buf[i][k]*2.4136;
+                        if (find(cycle.begin(), cycle.end(), cords_base[i].num) == cycle.end())
+                            cycle.push_back(cords_base[i].num);
+                        if (find(cycle.begin(), cycle.end(), cords_base[k].num) == cycle.end())
+                            cycle.push_back(cords_base[k].num);
                     }
         ribe_counter++;
         base[buf.first][buf.second] = -1;
@@ -268,22 +275,35 @@ int main()
                     {
                         return dist(a, center) < dist(b, center);
                     });
-                while ((transport[iteration] < limit) and (p < cords.size()))
+                while ((p < cords.size()) and (iteration < transport.size() - 1) and(transport[iteration] + cords[p].cost < limit))
                 {
                     transport[iteration] += cords[p].cost;
                     iteration_data.push_back(cords[p]);
                     p++;
                 }
                 iteration++;
+                if (iteration == transport.size() - 1)
+                {
+                    vector <int> f_result_cycle;
+                    while (p < cords.size())
+                    {
+                        transport[iteration] += cords[p].cost;
+                        iteration_data.push_back(cords[p]);
+                        p++;
+                    }
+                }              
                 auto buf_result = TSP_eng(iteration_data);
                 result += buf_result.first;
-                fout << iteration << ": ";
-                for (auto l : buf_result.second)
-                    fout << l << " ";
-                fout << endl;
+                if (false)
+                {
+                    fout << iteration << ": ";
+                    for (auto l : buf_result.second)
+                        fout << l << " ";
+                    fout << endl;
+                }                      
             }
-            fout << "---------- " << x << ":" << result << endl;
-            //fout << x << ":" << result << endl;
+            //fout << "---------- " << x << ":" << result << endl;
+            fout << x << ":" << result << endl;
             cout << x << " test finished " << endl << flush;
         }
         fout.close();
