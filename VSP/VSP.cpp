@@ -135,7 +135,7 @@ public:
                     if (get_min(i, k) > counter)
                     {
                         buf = make_pair(i, k);
-                        cost_ribe = base_buf[i][k]*2;
+                        cost_ribe = base_buf[i][k]*2*1.13;
                         cycle.push_back(cords_base[i].num);
                         cycle.push_back(cords_base[k].num);
                     }
@@ -277,13 +277,13 @@ int main()
                 iteration++;
                 auto buf_result = TSP_eng(iteration_data);
                 result += buf_result.first;
-                //fout << iteration << ": ";
-                //for (auto l : buf_result.second)
-                //    fout << l << " ";
-                //fout << endl;
+                fout << iteration << ": ";
+                for (auto l : buf_result.second)
+                    fout << l << " ";
+                fout << endl;
             }
-            //fout << "---------- " << x << ":" << result << endl;
-            fout << x << ":" << result << endl;
+            fout << "---------- " << x << ":" << result << endl;
+            //fout << x << ":" << result << endl;
             cout << x << " test finished " << endl << flush;
         }
         fout.close();
