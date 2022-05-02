@@ -8,17 +8,7 @@ using namespace std;
 
 
 
-class Cord
-{
-private:
-    double x, y;
-public:
-    int num;
-    Cord(double a, double b, int n) : x(a), y(b), num(n)
-    {}
-    friend double dist(Cord a, Cord b);
 
-};
 
 double dist(Cord a, Cord b)
 {
@@ -185,14 +175,7 @@ vector <string> list_files(string dir)
     return result;
 }
 
-Cord split(string& data, int num,  string file_debug = "")
-{
-    auto pos = data.find(" ");
-    int transp;
-    if (data.find("  ") != string::npos) transp = 2;
-    else transp = 1;
-    return Cord(stod(data.substr(0, pos)), stod(data.substr(pos + transp)), num);
-}
+
 
 
 double TSP_eng(vector <Cord> cords)
@@ -212,6 +195,32 @@ double TSP_eng(vector <Cord> cords)
 }
 
 
+class Cord
+{
+private:
+    double x, y;
+public:
+    int num;
+    double cost;
+    Cord(double a, double b, int n, double d) : x(a), y(b), num(n), cost(d)
+    {}
+    friend double dist(Cord a, Cord b);
+};
+
+Cord split(string& data, int num, string file_debug = "")
+{
+    auto pos = data.find(" ");
+    int transp;
+    if (data.find("  ") != string::npos) transp = 2;
+    else transp = 1;
+    string buf = data.substr(pos + transp);
+    double d = stod(data.substr(0, pos));
+    pos = buf.find(" ");
+    if (buf.find("  ") != string::npos) transp = 2;
+    else transp = 1;
+    return Cord(stod(buf.substr(0, pos)), stod(buf.substr(pos + transp)), num, d);
+}
+
 int main()
 {
     vector <string> data = list_files("data");
@@ -219,34 +228,25 @@ int main()
     ofstream fout;
     fout.open("result.txt");
     string x;
+    int number;
     try {
         for (int k = 0; k < data.size(); k++)
         {
+            number = 0;
             x = data[k];
             cout << "Starting " << x << endl << flush;
             vector <Cord> cords;
             ifstream file("data/" + x);
             getline(file, buf);
+            Cord enterd = split(buf, 0);
             while (getline(file, buf))
             {
                 if (buf == "") continue;
-                cords.push_back(split(buf, x));
+                cords.push_back(split(buf, number));
             }
             file.close();
-            TSP_Graph test(cords);
-            int count = 0;
-            while (!test.is_finish())
-            {
-                test.line_reduction();
-                test.column_reduction();
-                test.get_ribe_cost();
-                test.matrix_reduction();
-                count++;
-                cout << count << " edge ended." << flush << endl;
-            }
+
             cout << x << " test finished " << endl;
-            fout << x << ":" << test.return_cost() << endl;
-            test.~TSP_Graph();
         }
     }
     catch (exception& e)
