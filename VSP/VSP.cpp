@@ -8,8 +8,16 @@
 using namespace std;
 
 
-
-
+class Cord
+{
+public:
+    double x, y;
+    int num;
+    double cost;
+    Cord(double a, double b, int n, double d) : x(a), y(b), num(n), cost(d)
+    {}
+    friend double dist(Cord a, Cord b);
+};
 
 double dist(Cord a, Cord b)
 {
@@ -179,7 +187,7 @@ vector <string> list_files(string dir)
 
 
 
-double TSP_eng(vector <Cord> cords)
+double TSP_eng(vector <Cord> & cords)
 {
       TSP_Graph test(cords);
       int count = 0;
@@ -196,16 +204,7 @@ double TSP_eng(vector <Cord> cords)
 }
 
 
-class Cord
-{
-public:
-    double x, y;
-    int num;
-    double cost;
-    Cord(double a, double b, int n, double d) : x(a), y(b), num(n), cost(d)
-    {}
-    friend double dist(Cord a, Cord b);
-};
+
 
 Cord split(string& data, int num, string file_debug = "")
 {
@@ -243,10 +242,9 @@ int main()
             {
                 if (buf == "") continue;
                 cords.push_back(split(buf, number));
+                number++;
             }
             file.close();
-            vector <bool> flags(cords.size(), false);
-            flags[0] = true;
             vector <double> transport(enterd.x, 0);
             double limit = enterd.y;
             int iteration = 0;
@@ -256,6 +254,7 @@ int main()
             {
                 auto center = cords[p];
                 vector <Cord> iteration_data;
+                iteration_data.push_back(cords[0]);
                 sort(cords.begin() + p, cords.end(), [&](Cord a, Cord b)
                     {
                         return dist(a, center) < dist(b, center);
