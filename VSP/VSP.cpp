@@ -13,9 +13,11 @@ class Cord
 private:
     double x, y;
 public:
-    Cord(double a, double b) : x(a), y(b)
+    int num;
+    Cord(double a, double b, int n) : x(a), y(b), num(n)
     {}
     friend double dist(Cord a, Cord b);
+
 };
 
 double dist(Cord a, Cord b)
@@ -183,58 +185,36 @@ vector <string> list_files(string dir)
     return result;
 }
 
-Cord split(string& data, string file_debug = "")
+Cord split(string& data, int num,  string file_debug = "")
 {
     auto pos = data.find(" ");
     int transp;
     if (data.find("  ") != string::npos) transp = 2;
     else transp = 1;
-    return Cord(stod(data.substr(0, pos)), stod(data.substr(pos + transp)));
+    return Cord(stod(data.substr(0, pos)), stod(data.substr(pos + transp)), num);
+}
+
+
+double TSP_eng(vector <Cord> cords)
+{
+      TSP_Graph test(cords);
+      int count = 0;
+      while (!test.is_finish())
+        {
+           test.line_reduction();
+           test.column_reduction();
+           test.get_ribe_cost();
+           test.matrix_reduction();
+           count++;
+           cout << count << " edge ended." << flush << endl;
+        }
+      return test.return_cost();
 }
 
 
 int main()
 {
-    vector <string> data = list_files("data");
-    string buf;
-    ofstream fout;
-    fout.open("result.txt");
-    string x;
-    try {
-        for (int k = 0; k < data.size(); k++)
-        {
-            x = data[k];
-            cout << "Starting " << x << endl << flush;
-            vector <Cord> cords;
-            ifstream file("data/" + x);
-            getline(file, buf);
-            while (getline(file, buf))
-            {
-                if (buf == "") continue;
-                cords.push_back(split(buf, x));
-            }
-            file.close();
-            TSP_Graph test(cords);
-            int count = 0;
-            while (!test.is_finish())
-            {
-                test.line_reduction();
-                test.column_reduction();
-                test.get_ribe_cost();
-                test.matrix_reduction();
-                count++;
-                cout << count << " edge ended." << flush << endl;
-            }
-            cout << x << " test finished " << endl;
-            fout << x << ":" << test.return_cost() << endl;
-        }
-    }
-    catch (exception& e)
-    {
-        cout << e.what();
-        cin.get();
-    }
-    fout.close();
+
 }
 
 
@@ -269,3 +249,5 @@ double brutforce_method(vector <Cord> cords, double result)
     } while (next_permutation(permutations.begin(), permutations.end()));
     return buf;
 }
+
+
