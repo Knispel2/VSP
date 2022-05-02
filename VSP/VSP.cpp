@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cmath>
 #include <exception>
+#include <algorithm>
 using namespace std;
 
 
@@ -197,9 +198,8 @@ double TSP_eng(vector <Cord> cords)
 
 class Cord
 {
-private:
-    double x, y;
 public:
+    double x, y;
     int num;
     double cost;
     Cord(double a, double b, int n, double d) : x(a), y(b), num(n), cost(d)
@@ -245,8 +245,32 @@ int main()
                 cords.push_back(split(buf, number));
             }
             file.close();
-
-            cout << x << " test finished " << endl;
+            vector <bool> flags(cords.size(), false);
+            flags[0] = true;
+            vector <double> transport(enterd.x, 0);
+            double limit = enterd.y;
+            int iteration = 0;
+            int p = 1;
+            double result = 0;
+            while (p < cords.size())
+            {
+                auto center = cords[p];
+                vector <Cord> iteration_data;
+                sort(cords.begin() + p, cords.end(), [&](Cord a, Cord b)
+                    {
+                        return dist(a, center) < dist(b, center);
+                    });
+                while (transport[iteration] < limit)
+                {
+                    transport[iteration] += cords[p].cost;
+                    iteration_data.push_back(cords[p]);
+                    p++;
+                }
+                iteration++;
+                result += TSP_eng(iteration_data);
+            }
+            fout << x << ":" << result << endl;
+            cout << x << " test finished " << endl << flush;
         }
     }
     catch (exception& e)
