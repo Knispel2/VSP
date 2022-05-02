@@ -35,8 +35,15 @@ private:
     vector <bool> black_line;
     vector <bool> black_column;
     double all_cost = 0;
+    vector <int> cycle;
+    vector <Cord> cords_base;
 public:
 
+    vector <Cord> return_cycle()
+    {
+        return cord_base;
+    }
+    
     bool is_finish()
     {
         if (ribe_counter == base.size())
@@ -52,6 +59,7 @@ public:
 
     TSP_Graph(vector <Cord>& cords)
     { //за бесконечность положим -1
+        cords_base = cords;
         base.resize(cords.size(), vector<double>(cords.size(), -1));
         for (int i = 0; i < cords.size(); i++)
             for (int k = 0; k < cords.size(); k++)
@@ -128,6 +136,8 @@ public:
                     {
                         buf = make_pair(i, k);
                         cost_ribe = base_buf[i][k];
+                        cycle.push_back(cords_base[i].num);
+                        cycle.push_back(cords_base[k].num);
                     }
         ribe_counter++;
         base[buf.first][buf.second] = -1;
@@ -198,7 +208,7 @@ double TSP_eng(vector <Cord> & cords)
            test.get_ribe_cost();
            test.matrix_reduction();
            count++;
-           cout << count << " edge ended." << flush << endl;
+           //cout << count << " edge ended." << flush << endl;
         }
       return test.return_cost();
 }
