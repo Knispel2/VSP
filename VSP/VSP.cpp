@@ -24,6 +24,37 @@ double dist(Cord a, Cord b)
     return sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2));
 }
 
+
+bool check_perm(const vector <unsigned int>& base)
+{
+    for (int i = 0; i < base.size(); i++)
+        if (base[base[i] - 1] == i + 1) return false;
+    return true;
+}
+
+double cost_perm(vector <unsigned int>& permutations, vector <Cord>& cords)
+{
+    double result = 0;
+    for (int i = 0; i < permutations.size(); i++)
+        result += dist(cords[i + 1], cords[permutations[i] - 1]);
+    return result;
+}
+
+double brutforce_method(vector <Cord> cords)
+{
+    vector <unsigned int> permutations(cords.size());
+    for (int i = 0; i < cords.size(); i++)
+        permutations[i] = i + 1;
+    double buf;
+    do {
+        if (check_perm(permutations))
+        {
+            buf = cost_perm(permutations, cords);
+        }
+    } while (next_permutation(permutations.begin(), permutations.end()));
+    return buf;
+}
+
 class TSP_Graph
 {
 private:
@@ -214,6 +245,7 @@ pair <double, vector <int>> TSP_eng(vector <Cord> & cords)
            test.column_reduction();
            test.get_ribe_cost();
            test.matrix_reduction();
+           //brutforce_method(cords);
            count++;
            //cout << count << " edge ended." << flush << endl;
         }
@@ -307,39 +339,6 @@ int main()
             cout << x << " test finished " << endl << flush;
         }
         fout.close();
-}
-
-
-bool check_perm(const vector <unsigned int>& base)
-{
-    for (int i = 0; i < base.size(); i++)
-        if (base[base[i] - 1] == i + 1) return false;
-    return true;
-}
-
-double cost_perm(vector <unsigned int>& permutations, vector <Cord>& cords)
-{
-    double result = 0;
-    for (int i = 0; i < permutations.size(); i++)
-        result += dist(cords[i + 1], cords[permutations[i] - 1]);
-    return result;
-}
-
-double brutforce_method(vector <Cord> cords, double result)
-{
-    vector <unsigned int> permutations(cords.size());
-    for (int i = 0; i < cords.size(); i++)
-        permutations[i] = i + 1;
-    double buf;
-    do {
-        if (check_perm(permutations))
-        {
-            buf = cost_perm(permutations, cords);
-            if (buf > result)
-                result = buf;
-        }
-    } while (next_permutation(permutations.begin(), permutations.end()));
-    return buf;
 }
 
 
