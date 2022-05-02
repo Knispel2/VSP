@@ -222,13 +222,12 @@ Cord split(string& data, int num, string file_debug = "")
 
 int main()
 {
-    vector <string> data = list_files("data");
-    string buf;
-    ofstream fout;
-    fout.open("result.txt");
-    string x;
-    int number;
-    try {
+        vector <string> data = list_files("data");
+        string buf;
+        ofstream fout;
+        fout.open("result.txt");
+        string x;
+        int number;
         for (int k = 0; k < data.size(); k++)
         {
             number = 0;
@@ -240,7 +239,7 @@ int main()
             Cord enterd = split(buf, 0);
             while (getline(file, buf))
             {
-                if (buf == "") continue;
+                if ((buf == "") or (buf == " ")) continue;
                 cords.push_back(split(buf, number));
                 number++;
             }
@@ -259,7 +258,7 @@ int main()
                     {
                         return dist(a, center) < dist(b, center);
                     });
-                while (transport[iteration] < limit)
+                while ((transport[iteration] < limit) and (p < cords.size()))
                 {
                     transport[iteration] += cords[p].cost;
                     iteration_data.push_back(cords[p]);
@@ -271,13 +270,7 @@ int main()
             fout << x << ":" << result << endl;
             cout << x << " test finished " << endl << flush;
         }
-    }
-    catch (exception& e)
-    {
-        cout << e.what();
-        cin.get();
-    }
-    fout.close();
+        fout.close();
 }
 
 
