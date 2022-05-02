@@ -39,9 +39,9 @@ private:
     vector <Cord> cords_base;
 public:
 
-    vector <Cord> return_cycle()
+    vector <int> return_cycle()
     {
-        return cord_base;
+        return cycle;
     }
     
     bool is_finish()
@@ -197,7 +197,7 @@ vector <string> list_files(string dir)
 
 
 
-double TSP_eng(vector <Cord> & cords)
+pair <double, vector <int>> TSP_eng(vector <Cord> & cords)
 {
       TSP_Graph test(cords);
       int count = 0;
@@ -210,7 +210,7 @@ double TSP_eng(vector <Cord> & cords)
            count++;
            //cout << count << " edge ended." << flush << endl;
         }
-      return test.return_cost();
+      return make_pair(test.return_cost(), test.return_cycle());
 }
 
 
@@ -275,7 +275,11 @@ int main()
                     p++;
                 }
                 iteration++;
-                result += TSP_eng(iteration_data);
+                auto buf_result = TSP_eng(iteration_data);
+                result += buf_result.first;
+                fout << iteration << ": ";
+                for (auto l : buf_result.second)
+                    fout << l << " ";
             }
             fout << x << ":" << result << endl;
             cout << x << " test finished " << endl << flush;
