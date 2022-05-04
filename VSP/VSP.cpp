@@ -298,6 +298,7 @@ int main()
             int iteration = 0;
             int p = 1;
             double result = 0;
+            fout << "---------- " << x << endl;
             while (p < cords.size())
             {
                 auto center = cords[p];
@@ -325,7 +326,7 @@ int main()
                     }
                 }              
                 auto buf_result = TSP_eng(iteration_data);
-                result += buf_result.first;
+                result += buf_result.first;                
                 if (false)
                 {
                     fout << iteration << ": ";
