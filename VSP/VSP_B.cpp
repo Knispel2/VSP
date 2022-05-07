@@ -1,4 +1,4 @@
-п»ї#include <iostream>
+#include <iostream>
 #include <vector>
 #include <filesystem>
 #include <fstream>
@@ -74,7 +74,7 @@ public:
     {
         return cycle;
     }
-    
+
     bool is_finish()
     {
         if (cords_base.size() == 2)
@@ -94,7 +94,7 @@ public:
     }
 
     TSP_Graph(vector <Cord>& cords)
-    { //Р·Р° Р±РµСЃРєРѕРЅРµС‡РЅРѕСЃС‚СЊ РїРѕР»РѕР¶РёРј -1
+    { //за бесконечность положим -1
         cords_base = cords;
         base.resize(cords.size(), vector<double>(cords.size(), -1));
         for (int i = 0; i < cords.size(); i++)
@@ -171,7 +171,7 @@ public:
                     if (get_min(i, k) > counter)
                     {
                         buf = make_pair(i, k);
-                        cost_ribe = base_buf[i][k]*2.4136;
+                        cost_ribe = base_buf[i][k] * 2.4136;
                         if (find(cycle.begin(), cycle.end(), cords_base[i].num) == cycle.end())
                             cycle.push_back(cords_base[i].num);
                         if (find(cycle.begin(), cycle.end(), cords_base[k].num) == cycle.end())
@@ -235,21 +235,21 @@ vector <string> list_files(string dir)
 
 
 
-pair <double, vector <int>> TSP_eng(vector <Cord> & cords)
+pair <double, vector <int>> TSP_eng(vector <Cord>& cords)
 {
-      TSP_Graph test(cords);
-      int count = 0;
-      while (!test.is_finish())
-        {
-           test.line_reduction();
-           test.column_reduction();
-           test.get_ribe_cost();
-           test.matrix_reduction();
-           //brutforce_method(cords);
-           count++;
-           //cout << count << " edge ended." << flush << endl;
-        }
-      return make_pair(test.return_cost(), test.return_cycle());
+    TSP_Graph test(cords);
+    int count = 0;
+    while (!test.is_finish())
+    {
+        test.line_reduction();
+        test.column_reduction();
+        test.get_ribe_cost();
+        test.matrix_reduction();
+        brutforce_method(cords);
+        count++;
+        //cout << count << " edge ended." << flush << endl;
+    }
+    return make_pair(test.return_cost(), test.return_cycle());
 }
 
 
@@ -271,73 +271,73 @@ Cord split(string& data, int num, string file_debug = "")
 
 int main()
 {
-        vector <string> data = list_files("data");
-        string buf;
-        ofstream fout;
-        fout.open("result.txt");
-        string x;
-        int number;
-        for (int k = 0; k < data.size(); k++)
+    vector <string> data = list_files("data");
+    string buf;
+    ofstream fout;
+    fout.open("result.txt");
+    string x;
+    int number;
+    for (int k = 0; k < data.size(); k++)
+    {
+        number = 0;
+        x = data[k];
+        cout << "Starting " << x << endl << flush;
+        vector <Cord> cords;
+        ifstream file("data/" + x);
+        getline(file, buf);
+        Cord enterd = split(buf, 0);
+        while (getline(file, buf))
         {
-            number = 0;
-            x = data[k];
-            cout << "Starting " << x << endl << flush;
-            vector <Cord> cords;
-            ifstream file("data/" + x);
-            getline(file, buf);
-            Cord enterd = split(buf, 0);
-            while (getline(file, buf))
+            if ((buf == "") or (buf == " ")) continue;
+            cords.push_back(split(buf, number));
+            number++;
+        }
+        file.close();
+        vector <double> transport(enterd.x, 0);
+        double limit = enterd.y;
+        int iteration = 0;
+        int p = 1;
+        double result = 0;
+        //fout << "---------- " << x << endl;
+        while (p < cords.size())
+        {
+            auto center = cords[p];
+            vector <Cord> iteration_data;
+            iteration_data.push_back(cords[0]);
+            sort(cords.begin() + p, cords.end(), [&](Cord a, Cord b)
+                {return dist(a, center) < dist(b, center); });
+            while ((p < cords.size()) and (iteration < transport.size() - 1) and (transport[iteration] + cords[p].cost < limit))
             {
-                if ((buf == "") or (buf == " ")) continue;
-                cords.push_back(split(buf, number));
-                number++;
+                transport[iteration] += cords[p].cost;
+                iteration_data.push_back(cords[p]);
+                p++;
             }
-            file.close();
-            vector <double> transport(enterd.x, 0);
-            double limit = enterd.y;
-            int iteration = 0;
-            int p = 1;
-            double result = 0;
-            //fout << "---------- " << x << endl;
-            while (p < cords.size())
+            iteration++;
+            if (iteration == transport.size() - 1)
             {
-                auto center = cords[p];
-                vector <Cord> iteration_data;
-                iteration_data.push_back(cords[0]);
-                sort(cords.begin() + p, cords.end(), [&](Cord a, Cord b)
-                    {return dist(a, center) < dist(b, center);});
-                while ((p < cords.size()) and (iteration < transport.size() - 1) and(transport[iteration] + cords[p].cost < limit))
+                vector <int> f_result_cycle;
+                while (p < cords.size())
                 {
                     transport[iteration] += cords[p].cost;
                     iteration_data.push_back(cords[p]);
                     p++;
                 }
-                iteration++;
-                if (iteration == transport.size() - 1)
-                {
-                    vector <int> f_result_cycle;
-                    while (p < cords.size())
-                    {
-                        transport[iteration] += cords[p].cost;
-                        iteration_data.push_back(cords[p]);
-                        p++;
-                    }
-                }              
-                auto buf_result = TSP_eng(iteration_data);
-                result += buf_result.first;                
-                if (true)
-                {
-                    fout << iteration << ": ";
-                    for (auto l : buf_result.second)
-                        fout << l << " ";
-                    fout << endl;
-                }                      
             }
-            fout << "---------- " << x << ":" << result << endl;
-            //fout << x << ":" << result << endl;
-            cout << x << " test finished " << endl << flush;
+            auto buf_result = TSP_eng(iteration_data);
+            result += buf_result.first;
+            if (false)
+            {
+                fout << iteration << ": ";
+                for (auto l : buf_result.second)
+                    fout << l << " ";
+                fout << endl;
+            }
         }
-        fout.close();
+        fout << "---------- " << x << ":" << result << endl;
+        fout << x << ":" << result << endl;
+        cout << x << " test finished " << endl << flush;
+    }
+    fout.close();
 }
 
 
