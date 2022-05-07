@@ -305,9 +305,7 @@ int main()
                 vector <Cord> iteration_data;
                 iteration_data.push_back(cords[0]);
                 sort(cords.begin() + p, cords.end(), [&](Cord a, Cord b)
-                    {
-                        return dist(a, center) < dist(b, center);
-                    });
+                    {return dist(a, center) < dist(b, center);});
                 while ((p < cords.size()) and (iteration < transport.size() - 1) and(transport[iteration] + cords[p].cost < limit))
                 {
                     transport[iteration] += cords[p].cost;
